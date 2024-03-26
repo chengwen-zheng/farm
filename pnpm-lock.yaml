@@ -1826,6 +1826,12 @@ importers:
         specifier: workspace:*
         version: link:../../packages/plugin-tools
 
+  rust-plugins/remove-console:
+    devDependencies:
+      '@farmfe/plugin-tools':
+        specifier: latest
+        version: link:../../packages/plugin-tools
+
   rust-plugins/sass:
     optionalDependencies:
       sass-embedded-darwin-arm64:
