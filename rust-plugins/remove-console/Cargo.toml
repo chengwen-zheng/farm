@@ -1,12 +1,19 @@
 [package]
 edition = "2021"
-name = "remove_console"
+name = "farmfe_plugin_remove_console"
 version = "0.0.0"
 
 [lib]
 crate-type = ["cdylib", "rlib"]
 
 [dependencies]
-farmfe_core = { version = "*" }
-farmfe_toolkit_plugin_types = { version = "*" }
-farmfe_macro_plugin = { version = "*" }
+farmfe_core = { version = "*", path = "../../crates/core" }
+farmfe_toolkit_plugin_types = { version = "*", path = "../../crates/toolkit_plugin_types" }
+farmfe_macro_plugin = { version = "*", path = "../../crates/macro_plugin" }
+farmfe_toolkit = { path = "../../crates/toolkit", version = "0.0.3" }
+
+
+
+[dev-dependencies]
+farmfe_testing_helpers = { path = "../../crates/testing_helpers" }
+farmfe_compiler = { path = "../../crates/compiler" }
