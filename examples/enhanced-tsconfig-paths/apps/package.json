@@ -1,0 +1,14 @@
+{
+  "name": "@bright/app",
+  "version": "0.0.0",
+  "dependencies": {
+    "@bright/shared": "workspace:*"
+  },
+  "scripts": {
+    "build": "farm build"
+  },
+  "devDependencies": {
+    "@farmfe/cli": "workspace:../../../packages/cli",
+    "@farmfe/core": "workspace:../../../packages/core"
+  }
+}

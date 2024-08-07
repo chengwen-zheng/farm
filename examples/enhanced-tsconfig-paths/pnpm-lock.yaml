@@ -1,0 +1,24 @@
+lockfileVersion: '9.0'
+
+settings:
+  autoInstallPeers: true
+  excludeLinksFromLockfile: false
+
+importers:
+
+  .: {}
+
+  apps:
+    dependencies:
+      '@bright/shared':
+        specifier: workspace:*
+        version: link:../libs
+    devDependencies:
+      '@farmfe/cli':
+        specifier: workspace:../../../packages/cli
+        version: link:../../../packages/cli
+      '@farmfe/core':
+        specifier: workspace:../../../packages/core
+        version: link:../../../packages/core
+
+  libs: {}

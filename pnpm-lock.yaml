@@ -389,6 +389,8 @@ importers:
         specifier: ^0.14.0
         version: 0.14.0
 
+  examples/enhanced-tsconfig-paths: {}
+
   examples/env:
     devDependencies:
       '@farmfe/cli':
