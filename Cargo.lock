@@ -1501,9 +1501,12 @@ dependencies = [
 name = "enhanced_tsconfig_paths"
 version = "0.0.0"
 dependencies = [
+ "anyhow",
  "farmfe_core 0.6.4 (registry+https://github.com/rust-lang/crates.io-index)",
  "farmfe_macro_plugin 0.0.4 (registry+https://github.com/rust-lang/crates.io-index)",
  "farmfe_toolkit_plugin_types 0.0.20 (registry+https://github.com/rust-lang/crates.io-index)",
+ "glob",
+ "serde",
 ]
 
 [[package]]
