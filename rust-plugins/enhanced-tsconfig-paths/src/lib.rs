@@ -58,7 +58,6 @@ impl Plugin for EnhancedTsconfigPaths {
     _hook_context: &farmfe_core::plugin::PluginHookContext,
   ) -> farmfe_core::error::Result<Option<farmfe_core::plugin::PluginResolveHookResult>> {
     let request_path = &param.source;
-    println!("request_path: {:?}", request_path);
     if request_path.starts_with('.') || request_path.starts_with("..") {
       return Ok(None);
     }
@@ -68,7 +67,6 @@ impl Plugin for EnhancedTsconfigPaths {
         .parent()
         .unwrap()
         .to_path_buf();
-      println!("importer_dir: {:?}", importer_dir);
       if self.options.ignore_node_modules && importer_dir.to_str().unwrap().contains("node_modules")
       {
         return Ok(None);
@@ -78,7 +76,6 @@ impl Plugin for EnhancedTsconfigPaths {
       let mut matchers = self.matchers.clone();
 
       if let Some(tsconfig) = tsconfig_loader.load(&importer_dir) {
-        println!("tsconfig: {:?}", tsconfig);
         let matcher = matchers
           .entry(tsconfig.config_file_abs_path.clone())
           .or_insert_with(|| {
@@ -93,15 +90,10 @@ impl Plugin for EnhancedTsconfigPaths {
         if let Some(found_match) =
           matcher.match_path(request_path, &self.options.tsconfig_paths.extensions)
         {
-          println!("found_match: {:?}", found_match);
           let extensions = &self.options.tsconfig_paths.extensions;
           for ext in extensions {
             let path_with_ext = format!("{}{}", found_match, ext);
             if std::path::Path::new(&path_with_ext).exists() {
-              println!(
-                "Returning resolved path with extension: {:?}",
-                path_with_ext
-              );
               return Ok(Some(PluginResolveHookResult {
                 resolved_path: path_with_ext,
                 external: false,
@@ -112,17 +104,55 @@ impl Plugin for EnhancedTsconfigPaths {
             }
           }
 
-          println!("Returning original resolved path: {:?}", found_match);
-
-
           let absolute_path = PathBuf::from(&found_match)
             .canonicalize()
-            .unwrap_or_else(|_| PathBuf::from(&found_match))
-            .to_str()
-            .unwrap()
-            .to_string();
+            .unwrap_or_else(|_| PathBuf::from(&found_match));
+
+          let resolved_path = if absolute_path.is_dir() {
+            // 检查常见的入口文件名
+            let possible_entries = &["index.ts", "index.js", "index.tsx", "index.jsx"];
+            let found_entry = possible_entries
+              .iter()
+              .find(|&entry| absolute_path.join(entry).exists());
+            if let Some(entry) = found_entry {
+              absolute_path.join(entry)
+            } else {
+              // 如果没有找到入口文件，使用原始路径
+              absolute_path
+            }
+          } else {
+            absolute_path
+          };
+
+          // 检查文件是否存在，如果不存在，尝试添加配置的扩展名
+          let final_path = if !resolved_path.exists() {
+            let file_stem = resolved_path
+              .file_stem()
+              .unwrap_or_default()
+              .to_str()
+              .unwrap_or_default();
+            let parent = resolved_path.parent().unwrap_or(&resolved_path);
+
+            self
+              .options
+              .tsconfig_paths
+              .extensions
+              .iter()
+              .find_map(|ext| {
+                let path_with_ext = parent.join(format!("{}{}", file_stem, ext));
+                if path_with_ext.exists() {
+                  Some(path_with_ext)
+                } else {
+                  None
+                }
+              })
+              .unwrap_or(resolved_path)
+          } else {
+            resolved_path
+          };
+
           return Ok(Some(PluginResolveHookResult {
-            resolved_path: absolute_path,
+            resolved_path: final_path.to_str().unwrap().to_string(),
             external: false,
             side_effects: true,
             query: vec![],
@@ -131,9 +161,6 @@ impl Plugin for EnhancedTsconfigPaths {
         }
       }
     }
-
-    // self.tsconfig_loader = tsconfig_loader;
-    // self.matchers = matchers;
 
     Ok(None)
   }

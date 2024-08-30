@@ -45,7 +45,6 @@ impl PathMatcher {
             } else {
                 pattern.clone()
             };
-            //  .join(substitution.replace("*", request_path))
             if Pattern::new(&pattern).unwrap().matches(request_path) {
                 for substitution in substitutions {
                     let potential_path = Path::new(&self.base_url)
