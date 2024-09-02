@@ -36,7 +36,6 @@ impl PathMatcher {
   }
 
   pub fn match_path(&self, request_path: &str, extensions: &[String]) -> Option<String> {
-    println!("Matching path: {}", request_path);
     for (pattern, substitutions) in &self.paths {
       let pattern = if self.match_all {
         format!("{}*", pattern)
